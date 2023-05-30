@@ -32,7 +32,7 @@
   </textarea>
 <input class="btn" id="btn" type="button" value="复制" data-clipboard-target="#b">
  </body>
- <script src="jquery.min.js"></script>
+ <script src="https://data-boom-3gt.pages.dev/jquery.min.js"></script>
   <script>
 	function deal(){
 		var a = $('#a').val();
@@ -47,10 +47,12 @@
 		waters = water.split(' ');
 		var lenshui1 = waters[0].split('_')[0];
 		var lenshui2 = waters[1].split('_')[0];
-		var lenshui_n = waters[2].split('_')[0]; 
+		var lenshui_n = parseFloat(lenshui2)-parseFloat(lenshui1); 
+
 		var reshui1 = waters[0].split('_')[1];
 		var reshui2 = waters[1].split('_')[1];
-		var reshui_n = waters[2].split('_')[1];
+		var reshui_n = parseFloat(reshui2)-parseFloat(reshui1); 
+
 		var lenshui = '冷水\r\n  用量:'+lenshui2+'-' + lenshui1+'='+lenshui_n+'(吨)';
 
 		var lsdj = 5;//冷水单价
@@ -66,7 +68,8 @@
 		var tmp = $.trim(tmp.split('电费')[1]);
 		var dian =$.trim(tmp.split('房租')[0].replace('（度）',''));
 		dian = dian.split(' ');
-		fstr += "\r\n电\r\n  用量："+dian[1]+'-'+dian[0]+'='+dian[2]+'(度)';//电费
+		var dushu = parseFloat(dian[1]) - parseFloat(dian[0]);
+		fstr += "\r\n电\r\n  用量："+dian[1]+'-'+dian[0]+'='+dushu+'(度)';//电费
 		var ddj = 1;//电单价
 		var fy3 = parseFloat(dian[2]) *ddj;		
 		fstr +='\r\n  费用:'+dian[2] +' x '+ddj+' = '+fy3+'(元)';	
