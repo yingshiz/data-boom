@@ -73,11 +73,20 @@
 		var ddj = 1;//电单价
 		var fy3 = parseFloat(dian[2]) *ddj;		
 		fstr +='\r\n  费用:'+dian[2] +' x '+ddj+' = '+fy3+'(元)';	
-		
+
+		var wangfei = $.trim(a.split('网费')[1]);		
+		wangfei=parseInt(wangfei.split('管理费')[0]);
+		var fy5=0;var ftmp='';
+		if (!isNaN(wangfei))
+		{
+			fy5 = wangfei;
+			fstr +='\r\n网费:'+fy5+'(元)';
+			ftmp = '+'+fy5;
+		}		
 		var fy4= parseFloat($.trim(tmp.split('房租')[1].split('卫')[0]));
 		fstr += '\r\n房租:'+fy4+'(元)';
-		var total = fy1+fy2+fy3+fy4;
-		fstr +='\r\n合计：' +fy1+'+'+fy2+'+'+fy3+'+'+fy4+'='+total+'(元)';	
+		var total = fy1+fy2+fy3+fy4+fy5;
+		fstr +='\r\n合计：' +fy1+'+'+fy2+'+'+fy3+ftmp+'+'+fy4+'='+total+'(元)';	
 
 		$('#b').val(fstr);
 	}
