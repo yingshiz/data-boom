@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon" href="https://bj.sofang.com/favicon.ico" mce_href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="http://img.itmop.com/upload/2016-1/2016122105237.png" />
+	<link rel="apple-touch-icon" sizes="72x72" href="http://img.itmop.com/upload/2016-1/2016122105237.png" />
+	<link rel="apple-touch-icon" sizes="114x114" href="http://img.itmop.com/upload/2016-1/2016122105237.png" />
+  <title>房租</title>	
+  <style>
+	body{background-color: rgb(23, 24, 24);}
+	textarea{
+	margin: 0 auto;
+    width: 90%;
+    display: block;
+	height:250px;
+	}
+	.btn{
+	display: block;
+    margin: 10px auto;
+    width: 80px;
+    height: 30px;
+	}
+  </style>
+ <script src="https://www.itxst.com/package/clipboardjs/clipboard.min.js"></script>
+ </head>
+ <body>
+  <textarea name="" id="a" cols="30" rows="10"  onchange="deal(this)" onkeyup="deal(this)"></textarea>
+  <textarea name="" id="b" cols="30" rows="10">
+  </textarea>
+<input class="btn" id="btn" type="button" value="复制" data-clipboard-target="#b">
+ </body>
+ <script src="https://data-boom-3gt.pages.dev/jquery.min.js"></script>
+  <script>
+	function deal(){
+		var a = $('#a').val();
+		var fstr = '';
+		var tmp = a.split('栋');
+		var tmp1 = tmp[1].split('日');
+		var top = tmp1[0].replace(' ','').replace('.','').replace(/\s+/g,'').replace('年','-').replace('月','-').replace('房','房 ');		
+		fstr += top+"\r\n"; //抬头
+		var tmp = tmp1[1].split('吨');
+		if (tmp.length<2)
+		{
+			console.log('error_1');
+			return ;
+		}
+		tmp = tmp[1].replace(',','.').replace('>','').replaceAll('冷',' 冷');
+		var water = $.trim(tmp.split('电费')[0]).replaceAll('冷','').replaceAll('热','_').replace(',','.').replace(')','');
+		water = $.trim(water);
+		water = water.replace(' ',' ');		
+		waters = water.split(' ');
+		if (waters.length<2)
+		{
+			waters = water.split(' ');
+		}
+		if (waters.length<2)
+		{
+			console.log('error_2');
+			return ;
+		}
+		waters = waters.filter(Boolean); 
+
+		
+		var lenshui1 = waters[0].split('_')[0];
+		var lenshui2 = waters[1].split('_')[0];
+		var lenshui_n = parseFloat(lenshui2)-parseFloat(lenshui1); 
+
+		var reshui1 = waters[0].split('_')[1].toString();
+		var reshui2 = waters[1].split('_')[1].toString();
+		var reshui_n = parseFloat(reshui2)-parseFloat(reshui1); 
+		reshui_n = reshui_n.toFixed(1).toString();
+		reshui_n = reshui_n.replace('.0','');
+		var lenshui = '冷水\r\n  用量:'+lenshui2+'-' + lenshui1+'='+lenshui_n+'(吨)';
+
+		var lsdj = 5;//冷水单价
+		var fy1 = parseFloat(lenshui_n) * lsdj;
+		lenshui +='\r\n  费用:'+lenshui_n +' x '+lsdj+' = '+fy1+'(元)';
+		var reshui = '热水\r\n  用量:'+reshui2+'-' + reshui1+'='+reshui_n+'(吨)';
+		var rsdj = 30;//热水单价
+		var fy2 = parseFloat(reshui_n) *rsdj;
+		reshui +='\r\n  费用:'+reshui_n +' x '+rsdj+' = '+fy2+'(元)';
+		
+		fstr += lenshui+"\r\n"+reshui;//水费
+
+		var tmp = $.trim(tmp.split('电费')[1]);
+
+		tmp = tmp.replace('房 租','房租').replace('(','（').replace(')','）');		
+		var dian =$.trim(tmp.split('房租')[0].replace('（度）',''));
+		dian = dian.split(' ');
+		if (dian.length==1)
+		{
+			dian = dian[0].split(' ');
+		}
+		var dushu = parseFloat(dian[1]) - parseFloat(dian[0]);
+		fstr += "\r\n电\r\n  用量："+dian[1]+'-'+dian[0]+'='+dushu+'(度)';//电费
+		var ddj = parseFloat(dian[3]);//电单价
+		var fy3 = (parseFloat(dian[2]) *ddj).toFixed(1);		
+		fy3 = fy3.replace('.0','');
+		fstr +='\r\n  费用:'+dian[2] +' x '+ddj+' = '+fy3+'(元)';	
+
+		var wangfei = $.trim(a.split('网费')[1]);		
+		wangfei=parseInt(wangfei.split('管理费')[0]);
+		var fy5=0;var ftmp='';
+		if (!isNaN(wangfei))
+		{
+			fy5 = wangfei;
+			fstr +='\r\n网费:'+fy5+'(元)';
+			ftmp = '+'+fy5;
+		}	
+		tmp=tmp.replace('房 租','房租');
+		var fy4= parseFloat($.trim(tmp.split('房租')[1].split('卫')[0]));
+		fstr += '\r\n房租:'+fy4+'(元)';
+		var total = fy1+fy2+parseFloat(fy3)+fy4+fy5;
+		fy3 = fy3.replace('.0','');
+		fstr +='\r\n合计：' +fy1+'+'+fy2+'+'+fy3+ftmp+'+'+fy4+'='+total+'(元)';	
+
+		$('#b').val(fstr);
+	}
+        var clipboard = new ClipboardJS('.btn');
+
+        clipboard.on('success', function (e) {
+            e.clearSelection();
+			$('#btn').val("复制成功");
+        });
+
+        clipboard.on('error', function (e) {
+			$('#btn').val("复制失败");
+        });
+  </script>
+</html>
