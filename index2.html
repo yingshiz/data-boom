@@ -5,9 +5,6 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="icon" href="https://bj.sofang.com/favicon.ico" mce_href="/favicon.ico" type="image/x-icon">
-    <link rel="apple-touch-icon" href="http://img.itmop.com/upload/2016-1/2016122105237.png" />
-	<link rel="apple-touch-icon" sizes="72x72" href="http://img.itmop.com/upload/2016-1/2016122105237.png" />
-	<link rel="apple-touch-icon" sizes="114x114" href="http://img.itmop.com/upload/2016-1/2016122105237.png" />
   <title>房租</title>	
   <style>
 	body{background-color: rgb(23, 24, 24);}
@@ -27,97 +24,43 @@
  <script src="https://www.itxst.com/package/clipboardjs/clipboard.min.js"></script>
  </head>
  <body>
-  <textarea name="" id="a" cols="30" rows="10"  onchange="deal(this)" onkeyup="deal(this)"></textarea>
+  <textarea name="" id="a" cols="30" rows="10"  onchange="deal(this)" onchange="deal(this)"></textarea>
   <textarea name="" id="b" cols="30" rows="10">
   </textarea>
 <input class="btn" id="btn" type="button" value="复制" data-clipboard-target="#b">
  </body>
- <script src="https://data-boom-3gt.pages.dev/jquery.min.js"></script>
+ <script src="https://n.sinaimg.cn/ent/js/lib/jquery-1.7.2.js"></script>
   <script>
 	function deal(){
-		var a = $('#a').val();
-		var fstr = '';
-		var tmp = a.split('栋');
-		var tmp1 = tmp[1].split('日');
-		var top = tmp1[0].replace(' ','').replace('.','').replace(/\s+/g,'').replace('年','-').replace('月','-').replace('房','房 ');		
-		fstr += top+"\r\n"; //抬头
-		var tmp = tmp1[1].split('吨');
-		if (tmp.length<2)
-		{
-			console.log('error_1');
-			return ;
+		const  a = $('#a').val();
+		let r = a.split('栋');
+		r = r[1].replaceAll(',','.').replace(/[^\d.]/g, ' ');
+		r = r.split(' ');
+		r = r.filter(str => str !== '');
+		console.log(r);
+		str = r[0]+'房 '+r[1]+'年'+r[2]+'月'+r[3]+'日'+'\r\n';
+		str +='冷水:'+'\r\n';
+		str +='  用量:'+r[6]+'-'+r[4]+'='+r[8]+'(吨)'+'\r\n';
+		str +='  费用:'+r[10]+' x '+r[8]+' = '+r[12]+'元'+'\r\n';
+		str +='热水:'+'\r\n';
+		str +='  用量:'+r[7]+'-'+r[5]+'='+r[9]+'(吨)'+'\r\n';
+		str +='  费用:'+r[11]+' x '+r[9]+' = '+r[13]+'元'+'\r\n';
+		str +='电:'+'\r\n';
+		str +='  用量:'+r[16]+'-'+r[15]+'='+r[14]+'(度)'+'\r\n';
+		str +='  费用:'+r[18]+' x '+r[17]+' = '+r[14]+'元'+'\r\n';
+		let wf = '';
+		if(r[20]=='30') 	{
+			str +='网费:30元'+'\r\n';
+			wf = '+30';
 		}
-		tmp = tmp[1].replace(',','.').replace('>','').replaceAll('冷',' 冷');
-		var water = $.trim(tmp.split('电费')[0]).replaceAll('冷','').replaceAll('热','_').replace(',','.').replace(')','');
-		water = $.trim(water);
-		water = water.replace(' ',' ');		
-		waters = water.split(' ');
-		if (waters.length<2)
+		str +='房租:'+r[19]+'元'+'\r\n';
+		let total = parseFloat(r[12])+parseFloat(r[13])+parseFloat(r[14])+parseFloat(r[19]);
+		if (wf!='')
 		{
-			waters = water.split(' ');
+			total+=parseFloat(wf);
 		}
-		if (waters.length<2)
-		{
-			console.log('error_2');
-			return ;
-		}
-		waters = waters.filter(Boolean); 
-
-		
-		var lenshui1 = waters[0].split('_')[0];
-		var lenshui2 = waters[1].split('_')[0];
-		var lenshui_n = parseFloat(lenshui2)-parseFloat(lenshui1); 
-
-		var reshui1 = waters[0].split('_')[1].toString();
-		var reshui2 = waters[1].split('_')[1].toString();
-		var reshui_n = parseFloat(reshui2)-parseFloat(reshui1); 
-		reshui_n = reshui_n.toFixed(1).toString();
-		reshui_n = reshui_n.replace('.0','');
-		var lenshui = '冷水\r\n  用量:'+lenshui2+'-' + lenshui1+'='+lenshui_n+'(吨)';
-
-		var lsdj = 5;//冷水单价
-		var fy1 = parseFloat(lenshui_n) * lsdj;
-		lenshui +='\r\n  费用:'+lenshui_n +' x '+lsdj+' = '+fy1+'(元)';
-		var reshui = '热水\r\n  用量:'+reshui2+'-' + reshui1+'='+reshui_n+'(吨)';
-		var rsdj = 30;//热水单价
-		var fy2 = parseFloat(reshui_n) *rsdj;
-		reshui +='\r\n  费用:'+reshui_n +' x '+rsdj+' = '+fy2+'(元)';
-		
-		fstr += lenshui+"\r\n"+reshui;//水费
-
-		var tmp = $.trim(tmp.split('电费')[1]);
-
-		tmp = tmp.replace('房 租','房租').replace('(','（').replace(')','）');		
-		var dian =$.trim(tmp.split('房租')[0].replace('（度）',''));
-		dian = dian.split(' ');
-		if (dian.length==1)
-		{
-			dian = dian[0].split(' ');
-		}
-		var dushu = parseFloat(dian[1]) - parseFloat(dian[0]);
-		fstr += "\r\n电\r\n  用量："+dian[1]+'-'+dian[0]+'='+dushu+'(度)';//电费
-		var ddj = parseFloat(dian[3]);//电单价
-		var fy3 = (parseFloat(dian[2]) *ddj).toFixed(1);		
-		fy3 = fy3.replace('.0','');
-		fstr +='\r\n  费用:'+dian[2] +' x '+ddj+' = '+fy3+'(元)';	
-
-		var wangfei = $.trim(a.split('网费')[1]);		
-		wangfei=parseInt(wangfei.split('管理费')[0]);
-		var fy5=0;var ftmp='';
-		if (!isNaN(wangfei))
-		{
-			fy5 = wangfei;
-			fstr +='\r\n网费:'+fy5+'(元)';
-			ftmp = '+'+fy5;
-		}	
-		tmp=tmp.replace('房 租','房租');
-		var fy4= parseFloat($.trim(tmp.split('房租')[1].split('卫')[0]));
-		fstr += '\r\n房租:'+fy4+'(元)';
-		var total = fy1+fy2+parseFloat(fy3)+fy4+fy5;
-		fy3 = fy3.replace('.0','');
-		fstr +='\r\n合计：' +fy1+'+'+fy2+'+'+fy3+ftmp+'+'+fy4+'='+total+'(元)';	
-
-		$('#b').val(fstr);
+		str +='合计：' +r[12]+'+'+r[13]+'+'+r[14]+wf+'+'+r[19]+'='+total+'(元)';	
+		$('#b').val(str);
 	}
         var clipboard = new ClipboardJS('.btn');
 
